@@ -10,7 +10,11 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 
 public class PantallaJuego implements Screen {
@@ -25,6 +29,10 @@ public class PantallaJuego implements Screen {
 	private int velXAsteroides; 
 	private int velYAsteroides; 
 	private int cantAsteroides;
+	private Viewport viewport; 
+	private Texture fondoGalaxy;
+    private float scrollTimer = 0.0f; 
+    private float scrollSpeed = 70.0f; 
 	
 	private Nave4 nave;
 	private  ArrayList<Ball2> balls1 = new ArrayList<>();
@@ -42,8 +50,12 @@ public class PantallaJuego implements Screen {
 		this.cantAsteroides = cantAsteroides;
 		
 		batch = game.getBatch();
-		camera = new OrthographicCamera();	
-		camera.setToOrtho(false, 800, 640);
+		camera = new OrthographicCamera();
+		viewport = new StretchViewport(1200, 800, camera);
+		
+		fondoGalaxy = new Texture(Gdx.files.internal("espaceee.jpg"));
+		fondoGalaxy.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		
 		//inicializar assets; musica de fondo y efectos de sonido
 		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 		explosionSound.setVolume(1,0.5f);
@@ -80,8 +92,18 @@ public class PantallaJuego implements Screen {
 	}
 	@Override
 	public void render(float delta) {
-		  Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
+		
+		scrollTimer += delta * scrollSpeed;
+		if (scrollTimer > fondoGalaxy.getHeight()) {
+			scrollTimer = 0.0f;
+		}
+		
           batch.begin();
+          batch.draw(fondoGalaxy, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight(), 0, (int)scrollTimer, fondoGalaxy.getWidth(), fondoGalaxy.getHeight(), false, false);
+          
 		  dibujaEncabezado();
 	      if (!nave.estaHerido()) {
 		      // colisiones entre balas y asteroides y su destruccion  
@@ -165,11 +187,14 @@ public class PantallaJuego implements Screen {
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		gameMusic.play();
 	}
 
 	@Override
 	public void resize(int width, int height) {
+		viewport.update(width, height, true);
+	    batch.setProjectionMatrix(camera.combined);
 		// TODO Auto-generated method stub
 		
 	}

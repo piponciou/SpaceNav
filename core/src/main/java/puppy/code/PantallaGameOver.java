@@ -7,20 +7,20 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Texture; 
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite; 
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 
 public class PantallaGameOver implements Screen {
 
 	private SpaceNavigation game;
 	private OrthographicCamera camera;
-	private Texture fondoGalaxy;
-	private float scrollTimer = 0.0f; 
-	private float scrollSpeed = 40.0f; 
+	private Texture fondoGalaxy; 
 	private BitmapFont tituloFont;
 	private Texture explosionTexture; 
 	private Sprite EXPLOSIONA;
+	private Viewport viewport;
 	private static final float opacidad = 0.3f;
 	
 
@@ -28,10 +28,9 @@ public class PantallaGameOver implements Screen {
 		this.game = game;
         
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 1200, 800);
+		viewport = new StretchViewport(1200, 800, camera);
 		
 		fondoGalaxy = new Texture(Gdx.files.internal("espaceee.jpg")); 
-		fondoGalaxy.setWrap(TextureWrap.Repeat, TextureWrap.Repeat); 
 		
 		tituloFont = new BitmapFont((Gdx.files.internal("foont.fnt")));
 		tituloFont.getData().setScale(4f);
@@ -47,18 +46,12 @@ public class PantallaGameOver implements Screen {
 
 	@Override
 	public void render(float delta) { 
-		ScreenUtils.clear(0, 0, 0.2f, 1);
 
 		camera.update();
 		game.getBatch().setProjectionMatrix(camera.combined);
 		
-		scrollTimer += delta * scrollSpeed;
-	    if (scrollTimer > fondoGalaxy.getHeight()) 
-	        scrollTimer = 0.0f;
-
 		game.getBatch().begin();
-		
-		game.getBatch().draw(fondoGalaxy,0, 0,Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),0,(int)scrollTimer,fondoGalaxy.getWidth(),fondoGalaxy.getHeight(), false, false);
+		game.getBatch().draw(fondoGalaxy, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
 		
 		EXPLOSIONA.draw(game.getBatch());
 		
@@ -67,7 +60,7 @@ public class PantallaGameOver implements Screen {
 		String mensajeFinal = "No lograste escapar de la defensa planetaria.\n" + 
 			    "Los asteroides fueron más rápidos que tu habilidad.";
 		game.getFont().draw(game.getBatch(), mensajeFinal,80,360);
-		//game.getFont().draw(game.getBatch(), "Pincha en cualquier lado para reiniciar ...", 110, 300);
+		game.getFont().draw(game.getBatch(), "Pincha en cualquier lado para reiniciar ...", 80, 150);
 	
 		game.getBatch().end();
 		
@@ -82,12 +75,15 @@ public class PantallaGameOver implements Screen {
 	
 	@Override
 	public void show() {
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void resize(int width, int height) {
+		viewport.update(width, height, true);
+	    game.getBatch().setProjectionMatrix(camera.combined); 
 		// TODO Auto-generated method stub
 		
 	}

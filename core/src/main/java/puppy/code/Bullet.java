@@ -43,6 +43,9 @@ public class Bullet {
 	        }
 	        return false;
 	    }
+	    public com.badlogic.gdx.math.Rectangle getArea() {
+		    return spr.getBoundingRectangle();
+		}
 	    
 	    public boolean isDestroyed() {return destroyed;}
 	

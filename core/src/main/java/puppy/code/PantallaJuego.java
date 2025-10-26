@@ -36,7 +36,8 @@ public class PantallaJuego implements Screen {
 	private	 ArrayList<Ball2> balls1 = new ArrayList<>();
 	private	 ArrayList<Ball2> balls2 = new ArrayList<>();
 	private	 ArrayList<Bullet> balas = new ArrayList<>();
-	private ArrayList<Heart> corazones = new ArrayList<>(); // <--- NUEVO
+	private ArrayList<Heart> corazones = new ArrayList<>(); 
+	private ArrayList<PowerUp> powerUps = new ArrayList<>();
 
 
 	public PantallaJuego(SpaceNavigation game, int ronda, int vidas, int score,	
@@ -91,6 +92,17 @@ public class PantallaJuego implements Screen {
 	                corazonTexture);
 	        corazones.add(heart);
 	    }
+	    
+	    //crear powerUps
+	    Texture powerUpTexture = new Texture(Gdx.files.internal("PowerUp.png"));
+	    for(int i = 0; i<3 ; i++) {
+	        PowerUp powerUp = new PowerUp((int)(Math.random() * Gdx.graphics.getWidth()),
+	                50 + (int)(Math.random() * (Gdx.graphics.getHeight() - 50)),
+	                20, velXAsteroides + (int)(Math.random() * 4), velYAsteroides + (int)(Math.random() * 4),
+	                powerUpTexture);
+	        powerUps.add(powerUp);
+	    }
+	    
 	}
 	
 	public void dibujaEncabezado() {
@@ -149,11 +161,24 @@ public class PantallaJuego implements Screen {
 		    			}
 		    		}
 	    		}
+	    		if (i >= 0) { 
+		    		for (int h = 0; h < powerUps.size(); h++) {
+		    			PowerUp pp= powerUps.get(h);
+		    			if (b.getArea().overlaps(pp.getArea())) {
+		    				powerUps.remove(h);
+		    				balas.remove(i);
+		    				h--; i--;
+		    				break;
+		    			}
+		    		}
+	    		}
 	    		
-	    		//	 b.draw(batch); // Esta línea estaba comentada en tu original
+	    		
+	    		
+	    		//	 b.draw(batch); 
 	    		if (i >= 0 && b.isDestroyed()) { 
 	    			balas.remove(b);
-	    			i--; //para no saltarse 1 tras eliminar del arraylist
+	    			i--; 
 	    		}
 	    	}
 	    	
@@ -165,6 +190,11 @@ public class PantallaJuego implements Screen {
             //actualizar movimiento de corazones
             for (Heart heart : corazones) {
                 heart.update();
+            }
+            
+            //actualizar movimiento de los powerUps
+            for(PowerUp powerUp : powerUps) {
+            	powerUp.update();
             }
             
 	    	//colisiones entre asteroides y sus rebotes	
@@ -209,6 +239,19 @@ public class PantallaJuego implements Screen {
                 i--;
             }
         }
+        
+        //dibujar powerUps y colision con nave para activar el powerUp
+        for (int i = 0; i < powerUps.size(); i++) {
+            PowerUp powerUp = powerUps.get(i);
+            powerUp.draw(batch);
+           //aca deberia de implementarse la logica de acumular energias
+            if(nave.getArea().overlaps(powerUp.getArea())) {
+            	powerUps.remove(i);
+            	i--;
+            }
+                        
+        }
+        
 	    	
 	    if (nave.estaDestruido()) {
 			if (score > game.getHighScore())

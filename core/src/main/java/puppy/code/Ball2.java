@@ -22,7 +22,7 @@ public class Ball2 extends ObjetoEscena {
 
     public void checkCollision(Ball2 b2) {
         if (spr.getBoundingRectangle().overlaps(b2.getArea())) {
-            // rebote: la misma lógica que tenías antes
+            
             if (getXSpeed() == 0) setXSpeed(getXSpeed() + b2.getXSpeed() / 2);
             if (b2.getXSpeed() == 0) b2.setXSpeed(b2.getXSpeed() + getXSpeed() / 2);
             setXSpeed(-getXSpeed());

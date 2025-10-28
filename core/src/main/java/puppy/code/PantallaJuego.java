@@ -37,7 +37,7 @@ public class PantallaJuego implements Screen {
 	private	 ArrayList<Ball2> balls2 = new ArrayList<>();
 	private	 ArrayList<Bullet> balas = new ArrayList<>();
 	private ArrayList<Heart> corazones = new ArrayList<>(); 
-	private ArrayList<PowerUp> powerUps = new ArrayList<>();
+	private ArrayList<EscudoNave> escudos = new ArrayList<>();
 
 
 	public PantallaJuego(SpaceNavigation game, int ronda, int vidas, int score,	
@@ -93,17 +93,18 @@ public class PantallaJuego implements Screen {
 	        corazones.add(heart);
 	    }
 	    
-	    //crear powerUps
-	    Texture powerUpTexture = new Texture(Gdx.files.internal("PowerUp.png"));
-	    for(int i = 0; i<3 ; i++) {
-	        PowerUp powerUp = new PowerUp((int)(Math.random() * Gdx.graphics.getWidth()),
-	                50 + (int)(Math.random() * (Gdx.graphics.getHeight() - 50)),
-	                20, velXAsteroides + (int)(Math.random() * 4), velYAsteroides + (int)(Math.random() * 4),
-	                powerUpTexture);
-	        powerUps.add(powerUp);
-	    }
-	    
+	    //crear escudos
+	    Texture escudoTexture = new Texture(Gdx.files.internal("ESCUDOFINAL.png")); 
+        int cantEscudos = r.nextInt(2) + 3; 
+        for (int i = 0; i < cantEscudos; i++) {
+            EscudoNave shield = new EscudoNave(r.nextInt(Gdx.graphics.getWidth()),
+                    50 + r.nextInt(Gdx.graphics.getHeight() - 50),
+                    20, velXAsteroides + (int)(Math.random() * 4), velYAsteroides + (int)(Math.random() * 4),
+                    escudoTexture);
+            escudos.add(shield);
+        }
 	}
+        
 	
 	public void dibujaEncabezado() {
 		CharSequence str = "Vidas: "+nave.getVidas()+" Ronda: "+ronda;
@@ -161,11 +162,13 @@ public class PantallaJuego implements Screen {
 		    			}
 		    		}
 	    		}
+	    		
+	    		
 	    		if (i >= 0) { 
-		    		for (int h = 0; h < powerUps.size(); h++) {
-		    			PowerUp pp= powerUps.get(h);
+		    		for (int h = 0; h < escudos.size(); h++) {
+		    			EscudoNave pp= escudos.get(h);
 		    			if (b.getArea().overlaps(pp.getArea())) {
-		    				powerUps.remove(h);
+		    				escudos.remove(h);
 		    				balas.remove(i);
 		    				h--; i--;
 		    				break;
@@ -193,8 +196,8 @@ public class PantallaJuego implements Screen {
             }
             
             //actualizar movimiento de los powerUps
-            for(PowerUp powerUp : powerUps) {
-            	powerUp.update();
+            for(EscudoNave shield : escudos) {
+            	shield.update();
             }
             
 	    	//colisiones entre asteroides y sus rebotes	
@@ -240,18 +243,18 @@ public class PantallaJuego implements Screen {
             }
         }
         
-        //dibujar powerUps y colision con nave para activar el powerUp
-        for (int i = 0; i < powerUps.size(); i++) {
-            PowerUp powerUp = powerUps.get(i);
-            powerUp.draw(batch);
-           //aca deberia de implementarse la logica de acumular energias
-            if(nave.getArea().overlaps(powerUp.getArea())) {
-            	powerUps.remove(i);
-            	i--;
-            }
-                        
-        }
         
+        
+         for (int i = escudos.size() - 1; i >= 0; i--) {
+             EscudoNave shield = escudos.get(i);
+             shield.draw(batch);
+             if (nave.getArea().overlaps(shield.getArea())) {
+                  shield.activate(nave); 
+                  if (shield.isConsumed()) {
+                  escudos.remove(i);
+                   }
+               }
+           }
 	    	
 	    if (nave.estaDestruido()) {
 			if (score > game.getHighScore())

@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-
+import com.badlogic.gdx.math.Rectangle;
 
 
 public class Nave4 {
@@ -24,6 +24,10 @@ public class Nave4 {
     private boolean herido = false;
     private int tiempoHeridoMax=50;
     private int tiempoHerido;
+    private boolean escudoEnJuego = false;
+    private float tiempoEscudoRestante = 0f;
+    private Activable escudoActual = null;
+
     
     public Nave4(int x, int y, Texture tx, Sound soundChoque, Texture txBala, Sound soundBala) {
     	sonidoHerido = soundChoque;
@@ -33,9 +37,18 @@ public class Nave4 {
     	spr.setPosition(x, y);
     	//spr.setOriginCenter();
     	spr.setBounds(x, y, 45, 45);
-
     }
-    public void draw(SpriteBatch batch, PantallaJuego juego){
+    	
+    	
+    	
+    public void activarEscudoNave(float duracion, Activable activable) { 
+    	   this.escudoEnJuego = true;
+    	   this.tiempoEscudoRestante = duracion; 
+    	   this.escudoActual = activable;
+     }
+    	
+    
+    public void draw(SpriteBatch batch, PantallaJuego juego) {
         float x =  spr.getX();
         float y =  spr.getY();
         if (!herido) {
@@ -65,26 +78,66 @@ public class Nave4 {
 	        if (y+yVel < 0 || y+yVel+spr.getHeight() > Gdx.graphics.getHeight())
 	        	yVel*=-1;
 	        
-	        spr.setPosition(x+xVel, y+yVel);   
-         
- 		    spr.draw(batch);
+	        spr.setPosition(x+xVel, y+yVel);
+ 		    
+ 		    
         } else {
            spr.setX(spr.getX()+MathUtils.random(-2,2));
- 		   spr.draw(batch); 
  		  spr.setX(x);
  		   tiempoHerido--;
  		   if (tiempoHerido<=0) herido = false;
  		 }
+        
+        
+        if (escudoEnJuego) {
+        	tiempoEscudoRestante--;
+            if (tiempoEscudoRestante <= 0) {
+                if (escudoActual != null) {
+                    escudoActual.deactivate(this); 
+                    escudoActual = null;
+                }
+                escudoEnJuego = false; 
+            }
+        }
+                
+                
+        if (escudoEnJuego) {
+        	spr.setColor(0.5f, 0.5f, 1f, 1f);
+        	spr.setAlpha(0.5f); 
+               } else {
+                  spr.setColor(1f, 1f, 1f, 1f); 
+                  spr.setAlpha(1f); 
+               }
+        
+        spr.draw(batch);
+  
+        
         // disparo
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {         
           Bullet  bala = new Bullet(spr.getX()+spr.getWidth()/2-5,spr.getY()+ spr.getHeight()-5,0,3,txBala);
 	      juego.agregarBala(bala);
 	      soundBala.play();
         }
-       
+        
     }
+       
       
     public boolean checkCollision(Ball2 b) {
+   
+    	Rectangle naveArea = spr.getBoundingRectangle();
+        Rectangle asteroideArea = b.getArea();
+    	if (escudoEnJuego && asteroideArea.overlaps(naveArea)) {
+            tiempoEscudoRestante -= 10; 
+            b.setXSpeed(-b.getXSpeed());
+            b.setySpeed(-b.getySpeed());
+            float pushX = Math.signum(b.getArea().x - naveArea.x) * 2;
+            float pushY = Math.signum(b.getArea().y - naveArea.y) * 2;
+            b.spr.setPosition(b.spr.getX() + pushX, b.spr.getY() + pushY);
+            b.x = (int)b.spr.getX();
+            b.y = (int)b.spr.getY();
+            return false; 
+        }
+    	
         if(!herido && b.getArea().overlaps(spr.getBoundingRectangle())){
         	
             // despegar sprites
@@ -119,4 +172,9 @@ public class Nave4 {
 	public com.badlogic.gdx.math.Rectangle getArea() {
 	    return spr.getBoundingRectangle();
 	}
+
+	public boolean isEscudoActivo() { 
+		return escudoEnJuego;
+	}
 }
+	

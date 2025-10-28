@@ -36,7 +36,8 @@ public class PantallaJuego implements Screen {
 	private	 ArrayList<Ball2> balls1 = new ArrayList<>();
 	private	 ArrayList<Ball2> balls2 = new ArrayList<>();
 	private	 ArrayList<Bullet> balas = new ArrayList<>();
-	private ArrayList<Heart> corazones = new ArrayList<>(); // <--- NUEVO
+	private ArrayList<Heart> corazones = new ArrayList<>(); 
+	private ArrayList<EscudoNave> escudos = new ArrayList<>();
 
 
 	public PantallaJuego(SpaceNavigation game, int ronda, int vidas, int score,	
@@ -91,7 +92,19 @@ public class PantallaJuego implements Screen {
 	                corazonTexture);
 	        corazones.add(heart);
 	    }
+	    
+	    //crear escudos
+	    Texture escudoTexture = new Texture(Gdx.files.internal("ESCUDOFINAL.png")); 
+        int cantEscudos = r.nextInt(2) + 3; 
+        for (int i = 0; i < cantEscudos; i++) {
+            EscudoNave shield = new EscudoNave(r.nextInt(Gdx.graphics.getWidth()),
+                    50 + r.nextInt(Gdx.graphics.getHeight() - 50),
+                    20, velXAsteroides + (int)(Math.random() * 4), velYAsteroides + (int)(Math.random() * 4),
+                    escudoTexture);
+            escudos.add(shield);
+        }
 	}
+        
 	
 	public void dibujaEncabezado() {
 		CharSequence str = "Vidas: "+nave.getVidas()+" Ronda: "+ronda;
@@ -150,10 +163,25 @@ public class PantallaJuego implements Screen {
 		    		}
 	    		}
 	    		
-	    		//	 b.draw(batch); // Esta línea estaba comentada en tu original
+	    		
+	    		if (i >= 0) { 
+		    		for (int h = 0; h < escudos.size(); h++) {
+		    			EscudoNave pp= escudos.get(h);
+		    			if (b.getArea().overlaps(pp.getArea())) {
+		    				escudos.remove(h);
+		    				balas.remove(i);
+		    				h--; i--;
+		    				break;
+		    			}
+		    		}
+	    		}
+	    		
+	    		
+	    		
+	    		//	 b.draw(batch); 
 	    		if (i >= 0 && b.isDestroyed()) { 
 	    			balas.remove(b);
-	    			i--; //para no saltarse 1 tras eliminar del arraylist
+	    			i--; 
 	    		}
 	    	}
 	    	
@@ -165,6 +193,11 @@ public class PantallaJuego implements Screen {
             //actualizar movimiento de corazones
             for (Heart heart : corazones) {
                 heart.update();
+            }
+            
+            //actualizar movimiento de los powerUps
+            for(EscudoNave shield : escudos) {
+            	shield.update();
             }
             
 	    	//colisiones entre asteroides y sus rebotes	
@@ -209,6 +242,19 @@ public class PantallaJuego implements Screen {
                 i--;
             }
         }
+        
+        
+        
+         for (int i = escudos.size() - 1; i >= 0; i--) {
+             EscudoNave shield = escudos.get(i);
+             shield.draw(batch);
+             if (nave.getArea().overlaps(shield.getArea())) {
+                  shield.activate(nave); 
+                  if (shield.isConsumed()) {
+                  escudos.remove(i);
+                   }
+               }
+           }
 	    	
 	    if (nave.estaDestruido()) {
 			if (score > game.getHighScore())

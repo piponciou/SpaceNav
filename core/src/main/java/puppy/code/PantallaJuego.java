@@ -84,14 +84,15 @@ public class PantallaJuego implements Screen {
 	    }
 	    
 	    //crear corazones
-	    Texture corazonTexture = new Texture(Gdx.files.internal("heart.png"));
-	    for (int i = 0; i < 3; i++) {
-	        Heart heart = new Heart((int)(Math.random() * Gdx.graphics.getWidth()),
-	                50 + (int)(Math.random() * (Gdx.graphics.getHeight() - 50)),
-	                20, velXAsteroides + (int)(Math.random() * 4), velYAsteroides + (int)(Math.random() * 4),
-	                corazonTexture);
-	        corazones.add(heart);
-	    }
+
+        Texture corazonTexture = new Texture(Gdx.files.internal("heart.png"));
+        for (int i = 0; i < 3; i++) {
+            Heart heart = new Heart((int) (Math.random() * Gdx.graphics.getWidth()),
+                    50 + (int) (Math.random() * (Gdx.graphics.getHeight() - 50)),
+                    20, velXAsteroides + (int) (Math.random() * 4), velYAsteroides + (int) (Math.random() * 4),
+                    corazonTexture);
+            corazones.add(heart);
+        }
 	    
 	    //crear escudos
 	    Texture escudoTexture = new Texture(Gdx.files.internal("ESCUDOFINAL.png")); 
@@ -116,167 +117,160 @@ public class PantallaJuego implements Screen {
 	
 	@Override
 	public void render(float delta) {
-		
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Limpieza de pantalla
-		
-		camera.update();
-		batch.setProjectionMatrix(camera.combined);
-		
-		scrollTimer += delta * scrollSpeed;
-		if (scrollTimer > fondoGalaxy.getHeight()) {
-			scrollTimer = 0.0f;
-		}
-		
-        batch.begin();
-        batch.draw(fondoGalaxy, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight(), 0, (int)scrollTimer, fondoGalaxy.getWidth(), fondoGalaxy.getHeight(), false, false);
-        	
-		dibujaEncabezado();
+
+	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Limpieza de pantalla
+
+	    camera.update();
+	    batch.setProjectionMatrix(camera.combined);
+
+	    scrollTimer += delta * scrollSpeed;
+	    if (scrollTimer > fondoGalaxy.getHeight()) {
+	        scrollTimer = 0.0f;
+	    }
+
+	    batch.begin();
+	    batch.draw(fondoGalaxy, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight(), 0, (int)scrollTimer, fondoGalaxy.getWidth(), fondoGalaxy.getHeight(), false, false);
+
+	    dibujaEncabezado();
 	    if (!nave.estaHerido()) {
-		    // colisiones entre balas y asteroides y su destruccion	
-	    	for (int i = 0; i < balas.size(); i++) {
-	    		Bullet b = balas.get(i);
-	    		b.update();
-	    		
-	    		for (int j = 0; j < balls1.size(); j++) {	
-	    			if (b.checkCollision(balls1.get(j))) {	 	 	
-	    				explosionSound.play();
-	    				balls1.remove(j);
-	    				balls2.remove(j);
-	    				j--;
-	    				score +=10;
-	    				balas.remove(i); 
-	    				i--;
-	    				break;
-	    			}	 	
-	    		}
-	    		
-                // colisiones con corazones
-	    		if (i >= 0) { 
-		    		for (int h = 0; h < corazones.size(); h++) {
-		    			Heart heart = corazones.get(h);
-		    			if (b.getArea().overlaps(heart.getArea())) {
-		    				corazones.remove(h);
-		    				balas.remove(i);
-		    				h--; i--;
-		    				break;
-		    			}
-		    		}
-	    		}
-	    		
-	    		
-	    		if (i >= 0) { 
-		    		for (int h = 0; h < escudos.size(); h++) {
-		    			EscudoNave pp= escudos.get(h);
-		    			if (b.getArea().overlaps(pp.getArea())) {
-		    				escudos.remove(h);
-		    				balas.remove(i);
-		    				h--; i--;
-		    				break;
-		    			}
-		    		}
-	    		}
-	    		
-	    		
-	    		
-	    		//	 b.draw(batch); 
-	    		if (i >= 0 && b.isDestroyed()) { 
-	    			balas.remove(b);
-	    			i--; 
-	    		}
-	    	}
-	    	
-	    	//actualizar movimiento de asteroides dentro del area
-	    	for (Ball2 ball : balls1) {
-	    		ball.update();
-	    	}
-	    	
-            //actualizar movimiento de corazones
-            for (Heart heart : corazones) {
-                heart.update();
-            }
-            
-            //actualizar movimiento de los powerUps
-            for(EscudoNave shield : escudos) {
-            	shield.update();
-            }
-            
-	    	//colisiones entre asteroides y sus rebotes	
-	    	for (int i=0;i<balls1.size();i++) {
-	    		Ball2 ball1 = balls1.get(i);	
-	    		for (int j=0;j<balls2.size();j++) {
-	    			Ball2 ball2 = balls2.get(j);	
-	    			if (i<j) {
-	    				ball1.checkCollision(ball2);
-	    			}
-	    		}
-	    	}	
+	        // colisiones entre balas y asteroides y su destruccion	
+	        for (int i = 0; i < balas.size(); i++) {
+	            Bullet b = balas.get(i);
+	            b.update();
+
+	            for (int j = 0; j < balls1.size(); j++) {
+	                if (b.checkCollision(balls1.get(j))) {
+	                    explosionSound.play();
+	                    balls1.remove(j);
+	                    balls2.remove(j);
+	                    j--;
+	                    score += 10;
+	                    balas.remove(i);
+	                    i--;
+	                    break;
+	                }
+	            }
+
+	            // colisiones con corazones
+	            for (int h = 0; h < corazones.size(); h++) { // variable cambiada de i a h
+	                Heart heart = corazones.get(h);
+	                if (nave.getArea().overlaps(heart.getArea())) {
+	                    heart.activate(nave); // activar el efecto de sumar vida
+	                    if (heart.isConsumed()) {
+	                        corazones.remove(h);
+	                        h--;
+	                    }
+	                }
+	            }
+
+	            if (i >= 0) {
+	                for (int k = 0; k < escudos.size(); k++) { // variable cambiada de h a k
+	                    EscudoNave pp = escudos.get(k);
+	                    if (b.getArea().overlaps(pp.getArea())) {
+	                        escudos.remove(k);
+	                        balas.remove(i);
+	                        k--;
+	                        i--;
+	                        break;
+	                    }
+	                }
+	            }
+
+	            if (i >= 0 && b.isDestroyed()) {
+	                balas.remove(b);
+	                i--;
+	            }
+	        }
+
+	        //actualizar movimiento de asteroides dentro del area
+	        for (Ball2 ball : balls1) {
+	            ball.update();
+	        }
+
+	        //actualizar movimiento de corazones
+	        for (Heart heart : corazones) {
+	            heart.update();
+	        }
+
+	        //actualizar movimiento de los powerUps
+	        for (EscudoNave shield : escudos) {
+	            shield.update();
+	        }
+
+	        //colisiones entre asteroides y sus rebotes	
+	        for (int i=0; i<balls1.size(); i++) {
+	            Ball2 ball1 = balls1.get(i);
+	            for (int j=0; j<balls2.size(); j++) {
+	                Ball2 ball2 = balls2.get(j);
+	                if (i<j) {
+	                    ball1.checkCollision(ball2);
+	                }
+	            }
+	        }
 	    }
-	    
+
 	    //dibujar balas
-	    for (Bullet b : balas) {	 	
-	    	b.draw(batch);
+	    for (Bullet b : balas) {
+	        b.draw(batch);
 	    }
-	    
+
 	    nave.draw(batch, this);
-	    
+
 	    //dibujar asteroides y manejar colision con nave
 	    for (int i = 0; i < balls1.size(); i++) {
-	    	Ball2 b=balls1.get(i);
-	    	b.draw(batch);
-		    //perdió vida o game over
-	    	if (nave.checkCollision(b)) {
-		    	//asteroide se destruye con el choque	 	 	 	
-	    		balls1.remove(i);
-	    		balls2.remove(i);
-	    		i--;
-	    	}	 	
+	        Ball2 b=balls1.get(i);
+	        b.draw(batch);
+	        //perdió vida o game over
+	        if (nave.checkCollision(b)) {
+	            //asteroide se destruye con el choque	 	 	 	
+	            balls1.remove(i);
+	            balls2.remove(i);
+	            i--;
+	        }
 	    }
-	    
-        //dibujar corazones y colision con nave para sumar vidas
-        for (int i = 0; i < corazones.size(); i++) {
-            Heart heart = corazones.get(i);
-            heart.draw(batch);
-            if (nave.getArea().overlaps(heart.getArea())) {
-                if (nave.getVidas() < 3) nave.setVidas(nave.getVidas() + 1);
-                corazones.remove(i);
-                i--;
-            }
-        }
-        
-        
-        
-         for (int i = escudos.size() - 1; i >= 0; i--) {
-             EscudoNave shield = escudos.get(i);
-             shield.draw(batch);
-             if (nave.getArea().overlaps(shield.getArea())) {
-                  shield.activate(nave); 
-                  if (shield.isConsumed()) {
-                  escudos.remove(i);
-                   }
-               }
-           }
-	    	
+
+	    //dibujar corazones y colision con nave para sumar vidas
+	    for (int i = 0; i < corazones.size(); i++) {
+	        Heart heart = corazones.get(i);
+	        heart.draw(batch);
+	        if (nave.getArea().overlaps(heart.getArea())) {
+	            if (nave.getVidas() < 3) nave.setVidas(nave.getVidas() + 1);
+	            corazones.remove(i);
+	            i--;
+	        }
+	    }
+
+	    for (int i = escudos.size() - 1; i >= 0; i--) {
+	        EscudoNave shield = escudos.get(i);
+	        shield.draw(batch);
+	        if (nave.getArea().overlaps(shield.getArea())) {
+	            shield.activate(nave);
+	            if (shield.isConsumed()) {
+	                escudos.remove(i);
+	            }
+	        }
+	    }
+
 	    if (nave.estaDestruido()) {
-			if (score > game.getHighScore())
-				game.setHighScore(score);
-			Screen ss = new PantallaGameOver(game);
-			ss.resize(1200, 800);
-			game.setScreen(ss);
-			dispose();
-		}
-	    
+	        if (score > game.getHighScore())
+	            game.setHighScore(score);
+	        Screen ss = new PantallaGameOver(game);
+	        ss.resize(1200, 800);
+	        game.setScreen(ss);
+	        dispose();
+	    }
+
 	    batch.end();
-	    
+
 	    //nivel completado
-	    if (balls1.size()==0) {
-			Screen ss = new PantallaJuego(game,ronda+1, nave.getVidas(), score,	
-					velXAsteroides+3, velYAsteroides+3, cantAsteroides+10);
-			ss.resize(1200, 800);
-			game.setScreen(ss);
-			dispose();
-		}
-	    	
+	    if (balls1.size() == 0) {
+	        Screen ss = new PantallaJuego(game, ronda + 1, nave.getVidas(), score, velXAsteroides + 3, velYAsteroides + 3, cantAsteroides + 10);
+	        ss.resize(1200, 800);
+	        game.setScreen(ss);
+	        dispose();
+	    }
 	}
+
     
     public boolean agregarBala(Bullet bb) {
         return balas.add(bb);

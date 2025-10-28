@@ -24,6 +24,7 @@ public class Nave4 {
     private boolean herido = false;
     private int tiempoHeridoMax=50;
     private int tiempoHerido;
+    
     private boolean escudoEnJuego = false;
     private float tiempoEscudoRestante = 0f;
     private Activable escudoActual = null;

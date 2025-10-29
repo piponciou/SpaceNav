@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 public class Ball2 extends ObjetoEscena {
     public Ball2(int x, int y, int size, int xSpeed, int ySpeed, Texture tx) {
         super(x, y, size, xSpeed, ySpeed, tx);
+        spr.setSize(50,50);
     }
 
     @Override

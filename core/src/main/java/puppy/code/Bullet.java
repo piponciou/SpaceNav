@@ -12,6 +12,7 @@ public class Bullet {
 	private int ySpeed;
 	private boolean destroyed = false;
 	private Sprite spr;
+	private float bulletSpeed = 5f;
 	    
 	    public Bullet(float x, float y, int xSpeed, int ySpeed, Texture tx) {
 	    	spr = new Sprite(tx);
@@ -20,7 +21,7 @@ public class Bullet {
 	        this.ySpeed = ySpeed;
 	    }
 	    public void update() {
-	        spr.setPosition(spr.getX()+xSpeed, spr.getY()+ySpeed);
+	        spr.setPosition(spr.getX()+xSpeed * bulletSpeed , spr.getY()+ySpeed*bulletSpeed);
 	        if (spr.getX() < 0 || spr.getX()+spr.getWidth() > Gdx.graphics.getWidth()) {
 	            destroyed = true;
 	        }

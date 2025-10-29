@@ -1,6 +1,7 @@
 package puppy.code;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,6 +16,7 @@ public class SpaceNavigation extends Game {
 	private int highScore;	
 
 	public void create() {
+		Gdx.graphics.setForegroundFPS(60); 
 		highScore = 0;
 		batch = new SpriteBatch();
 		font = new BitmapFont(); // usa Arial font x defecto

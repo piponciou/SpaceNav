@@ -14,7 +14,7 @@ public class Nave4 {
 	
 	private boolean destruida = false;
     private int vidas = 3;
-    private float speed =  2f;
+    private float speed =  5f;
     private float xVel = 0;
     private float yVel = 0;
     private Sprite spr;
@@ -54,10 +54,13 @@ public class Nave4 {
         float y =  spr.getY();
         if (!herido) {
 	        // que se mueva con teclado
-	        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) xVel = -speed;
-	        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) xVel = speed;;
-        	if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) yVel = -speed;     
-	        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) yVel = speed;
+        	xVel = 0;
+        	yVel = 0;
+        	
+	        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) xVel = -speed;
+	        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) xVel = speed;;
+        	if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) yVel = -speed;     
+	        if (Gdx.input.isKeyPressed(Input.Keys.UP)) yVel = speed;
         	
 	     /*   if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) spr.setRotation(++rotacion);
 	        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) spr.setRotation(--rotacion);

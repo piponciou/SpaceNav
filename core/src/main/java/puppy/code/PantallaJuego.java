@@ -53,39 +53,36 @@ public class PantallaJuego implements Screen {
 		camera = new OrthographicCamera();
 		viewport = new StretchViewport(1200, 800, camera);
 		
-		fondoGalaxy = new Texture(Gdx.files.internal("espaceee.jpg"));
+		Recursos res = Recursos.getInstance();
+		
+		fondoGalaxy = res.fondoGalaxy;
 		fondoGalaxy.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		
-		//inicializar assets; musica de fondo y efectos de sonido
-		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
+		explosionSound = res.soundExplosion;
 		explosionSound.setVolume(1,0.5f);
-		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("piano-loops.wav")); //
+		gameMusic = res.musicJuego; 
 		
 		gameMusic.setLooping(true);
 		gameMusic.setVolume(0.5f);
 		gameMusic.play();
 		
-	    // cargar imagen de la nave, 64x64 	
-	    nave = new Nave4(Gdx.graphics.getWidth()/2-50,30,new Texture(Gdx.files.internal("MainShip3.png")),
-	    				Gdx.audio.newSound(Gdx.files.internal("hurt.ogg")),	
-	    				new Texture(Gdx.files.internal("Rocket2.png")),	
-	    				Gdx.audio.newSound(Gdx.files.internal("pop-sound.mp3")));	
+	    nave = new Nave4(Gdx.graphics.getWidth()/2-50,30, res.txNave,
+	    				res.soundHerido,	
+	    				res.txBala,	
+	    				res.soundBala);	
         nave.setVidas(vidas);
         
-        //crear asteroides
-        Random r = new Random(); // Necesario para la generación aleatoria
+        Random r = new Random();
 	    for (int i = 0; i < cantAsteroides; i++) {
 	        Ball2 bb = new Ball2((int)(Math.random() * Gdx.graphics.getWidth()),
 	                50 + (int)(Math.random() * (Gdx.graphics.getHeight() - 50)),
 	                20 + (int)(Math.random() * 10), velXAsteroides + (int)(Math.random() * 4), velYAsteroides + (int)(Math.random() * 4),
-	                new Texture(Gdx.files.internal("aGreyMedium4.png")));
+	                res.txAsteroide);
 	    	balls1.add(bb);
 	    	balls2.add(bb);
 	    }
 	    
-	    //crear corazones
-
-        Texture corazonTexture = new Texture(Gdx.files.internal("heart.png"));
+        Texture corazonTexture = res.txCorazon;
         for (int i = 0; i < 3; i++) {
             Heart heart = new Heart((int) (Math.random() * Gdx.graphics.getWidth()),
                     50 + (int) (Math.random() * (Gdx.graphics.getHeight() - 50)),
@@ -94,8 +91,7 @@ public class PantallaJuego implements Screen {
             corazones.add(heart);
         }
 	    
-	    //crear escudos
-	    Texture escudoTexture = new Texture(Gdx.files.internal("ESCUDOFINAL.png")); 
+	    Texture escudoTexture = res.txEscudo; 
         int cantEscudos = r.nextInt(2) + 3; 
         for (int i = 0; i < cantEscudos; i++) {
             EscudoNave shield = new EscudoNave(r.nextInt(Gdx.graphics.getWidth()),
@@ -118,7 +114,7 @@ public class PantallaJuego implements Screen {
 	@Override
 	public void render(float delta) {
 
-	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Limpieza de pantalla
+	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 
 
 	    camera.update();
 	    batch.setProjectionMatrix(camera.combined);
@@ -133,7 +129,7 @@ public class PantallaJuego implements Screen {
 
 	    dibujaEncabezado();
 	    if (!nave.estaHerido()) {
-	        // colisiones entre balas y asteroides y su destruccion	
+	        
 	        for (int i = 0; i < balas.size(); i++) {
 	            Bullet b = balas.get(i);
 	            b.update();
@@ -151,11 +147,10 @@ public class PantallaJuego implements Screen {
 	                }
 	            }
 
-	            // colisiones con corazones
-	            for (int h = 0; h < corazones.size(); h++) { // variable cambiada de i a h
+	            for (int h = 0; h < corazones.size(); h++) { 
 	                Heart heart = corazones.get(h);
 	                if (nave.getArea().overlaps(heart.getArea())) {
-	                    heart.activate(nave); // activar el efecto de sumar vida
+	                    heart.activate(nave); 
 	                    if (heart.isConsumed()) {
 	                        corazones.remove(h);
 	                        h--;
@@ -164,7 +159,7 @@ public class PantallaJuego implements Screen {
 	            }
 
 	            if (i >= 0) {
-	                for (int k = 0; k < escudos.size(); k++) { // variable cambiada de h a k
+	                for (int k = 0; k < escudos.size(); k++) {
 	                    EscudoNave pp = escudos.get(k);
 	                    if (b.getArea().overlaps(pp.getArea())) {
 	                        escudos.remove(k);
@@ -182,22 +177,18 @@ public class PantallaJuego implements Screen {
 	            }
 	        }
 
-	        //actualizar movimiento de asteroides dentro del area
 	        for (Ball2 ball : balls1) {
 	            ball.update();
 	        }
 
-	        //actualizar movimiento de corazones
 	        for (Heart heart : corazones) {
 	            heart.update();
 	        }
 
-	        //actualizar movimiento de los powerUps
 	        for (EscudoNave shield : escudos) {
 	            shield.update();
 	        }
 
-	        //colisiones entre asteroides y sus rebotes	
 	        for (int i=0; i<balls1.size(); i++) {
 	            Ball2 ball1 = balls1.get(i);
 	            for (int j=0; j<balls2.size(); j++) {
@@ -209,27 +200,22 @@ public class PantallaJuego implements Screen {
 	        }
 	    }
 
-	    //dibujar balas
 	    for (Bullet b : balas) {
 	        b.draw(batch);
 	    }
 
 	    nave.draw(batch, this);
 
-	    //dibujar asteroides y manejar colision con nave
 	    for (int i = 0; i < balls1.size(); i++) {
 	        Ball2 b=balls1.get(i);
 	        b.draw(batch);
-	        //perdió vida o game over
 	        if (nave.checkCollision(b)) {
-	            //asteroide se destruye con el choque	 	 	 	
 	            balls1.remove(i);
 	            balls2.remove(i);
 	            i--;
 	        }
 	    }
 
-	    //dibujar corazones y colision con nave para sumar vidas
 	    for (int i = 0; i < corazones.size(); i++) {
 	        Heart heart = corazones.get(i);
 	        heart.draw(batch);
@@ -262,7 +248,6 @@ public class PantallaJuego implements Screen {
 
 	    batch.end();
 
-	    //nivel completado
 	    if (balls1.size() == 0) {
 	        Screen ss = new PantallaJuego(game, ronda + 1, nave.getVidas(), score, velXAsteroides + 3, velYAsteroides + 3, cantAsteroides + 10);
 	        ss.resize(1200, 800);
@@ -278,7 +263,6 @@ public class PantallaJuego implements Screen {
 	
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
 		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		gameMusic.play();
 	}
@@ -287,33 +271,23 @@ public class PantallaJuego implements Screen {
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
 	    batch.setProjectionMatrix(camera.combined);
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		this.explosionSound.dispose();
-		this.gameMusic.dispose();
+		this.gameMusic.stop();
 	}
 	
 }

@@ -30,12 +30,14 @@ public class PantallaGameOver implements Screen {
 		camera = new OrthographicCamera();
 		viewport = new StretchViewport(1200, 800, camera);
 		
-		fondoGalaxy = new Texture(Gdx.files.internal("espaceee.jpg")); 
+		Recursos res = Recursos.getInstance();
 		
-		tituloFont = new BitmapFont((Gdx.files.internal("foont.fnt")));
+		fondoGalaxy = res.fondoGalaxy; 
+		
+		tituloFont = res.tituloFont;
 		tituloFont.getData().setScale(4f);
 		
-		explosionTexture = new Texture(Gdx.files.internal("explosion_pixelart.png")); 
+		explosionTexture = res.txExplosionGameOver; 
         EXPLOSIONA = new Sprite(explosionTexture);
         
         EXPLOSIONA.setSize(1200, 800); 
@@ -76,40 +78,28 @@ public class PantallaGameOver implements Screen {
 	@Override
 	public void show() {
 		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
 	    game.getBatch().setProjectionMatrix(camera.combined); 
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
 	}
    
 }

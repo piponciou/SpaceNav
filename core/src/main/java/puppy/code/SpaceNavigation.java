@@ -29,11 +29,12 @@ public class SpaceNavigation extends Game {
 		super.render(); // important!
 	}
 
-	public void dispose() {
-		batch.dispose();
-		font.dispose();
+	@Override
+	public void dispose () {
+	    super.dispose();
+	    Recursos.getInstance().dispose();
 	}
-
+	
 	public SpriteBatch getBatch() {
 		return batch;
 	}

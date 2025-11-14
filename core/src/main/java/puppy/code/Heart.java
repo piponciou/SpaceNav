@@ -11,17 +11,7 @@ public class Heart extends ObjetoEscena implements Activable {
     }
 
     @Override
-    public void update() {
-        // Movimiento igual que las rocas (rebote en los bordes)
-        x += xSpeed;
-        y += ySpeed;
-
-        if (x + xSpeed < 0 || x + xSpeed + spr.getWidth() > com.badlogic.gdx.Gdx.graphics.getWidth())
-            xSpeed *= -1;
-        if (y + ySpeed < 0 || y + ySpeed + spr.getHeight() > com.badlogic.gdx.Gdx.graphics.getHeight())
-            ySpeed *= -1;
-
-        spr.setPosition(x, y);
+    public void performUpdate() {
     }
 
     @Override

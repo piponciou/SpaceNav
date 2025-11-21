@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.Align;
 
 public class PantallaJuego implements Screen {
 
@@ -37,6 +38,7 @@ public class PantallaJuego implements Screen {
     private float scrollSpeed = 70.0f;	
 	
 	private Nave4 nave;
+	private HealthHUD hud;
 	private	 ArrayList<Ball2> balls1 = new ArrayList<>();
 	private	 ArrayList<Ball2> balls2 = new ArrayList<>();
 	private	 ArrayList<Bullet> balas = new ArrayList<>();
@@ -63,6 +65,7 @@ public class PantallaJuego implements Screen {
 		
 		
 		Recursos res = Recursos.getInstance();
+		hud = new HealthHUD(res.txCorazon);
 		
 		fondoGalaxy = res.fondoGalaxy;
 		fondoGalaxy.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
@@ -136,11 +139,12 @@ public class PantallaJuego implements Screen {
         
 	
 	public void dibujaEncabezado() {
-		CharSequence str = "Vidas: "+nave.getVidas()+" Ronda: "+ronda;
-		game.getFont().getData().setScale(2f);		
-		game.getFont().draw(batch, str, 10, 30);
-		game.getFont().draw(batch, "Score:"+this.score, Gdx.graphics.getWidth()-150, 30);
-		game.getFont().draw(batch, "HighScore:"+game.getHighScore(), Gdx.graphics.getWidth()/2-100, 30);
+	  
+	    hud.draw(batch, nave.getVidas());
+
+	    game.getFont().getData().setScale(2f);		
+	    game.getFont().draw(batch, "Ronda: " + ronda, 150, 770); 
+	    game.getFont().draw(batch, "Score: " + this.score, Gdx.graphics.getWidth() / 2 - 100, 770);
 	}
 	
 	@Override

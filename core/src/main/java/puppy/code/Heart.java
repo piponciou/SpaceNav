@@ -25,6 +25,7 @@ public class Heart extends ObjetoEscena implements Activable {
     @Override
     public void deactivate(Nave4 nave) {
         // no se ocupa, pero debe estar por la interfaz
+    	//SE OCUPA EN OTRA CLASE PERO NO EN ESTA.
     }
 
     @Override

@@ -17,6 +17,7 @@ public class Recursos {
     public Texture txCorazon;
     public Texture txEscudo;
     public Texture txExplosionGameOver;
+    public Texture txJefe;
     
     public Sound soundExplosion;
     public Sound soundHerido;
@@ -44,6 +45,7 @@ public class Recursos {
         
         font = new BitmapFont(); 
         tituloFont = new BitmapFont(Gdx.files.internal("foont.fnt"));
+        txJefe = new Texture(Gdx.files.internal("jefe_profe.png"));
     }
 
     public static Recursos getInstance() {

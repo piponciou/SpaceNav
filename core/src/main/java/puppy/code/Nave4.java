@@ -29,6 +29,7 @@ public class Nave4 {
     private float tiempoEscudoRestante = 0f;
     private Activable escudoActual = null;
 
+    private EstrategiaDisparo estrategiaDisparo;//nuevo atributo de estrategia 2.3
     
     public Nave4(int x, int y, Texture tx, Sound soundChoque, Texture txBala, Sound soundBala) {
     	sonidoHerido = soundChoque;
@@ -38,9 +39,13 @@ public class Nave4 {
     	spr.setPosition(x, y);
     	//spr.setOriginCenter();
     	spr.setBounds(x, y, 45, 45);
+    	this.estrategiaDisparo = new DisparoSimple(txBala, soundBala);
     }
     	
     	
+    public void setEstrategiaDisparo(EstrategiaDisparo estrategia) {
+        this.estrategiaDisparo = estrategia;
+    }
     	
     public void activarEscudoNave(float duracion, Activable activable) { 
     	   this.escudoEnJuego = true;
@@ -118,9 +123,7 @@ public class Nave4 {
         
         // disparo
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {         
-          Bullet  bala = new Bullet(spr.getX()+spr.getWidth()/2-5,spr.getY()+ spr.getHeight()-5,0,3,txBala);
-	      juego.agregarBala(bala);
-	      soundBala.play();
+        	estrategiaDisparo.disparar(this, juego);
         }
         
     }
